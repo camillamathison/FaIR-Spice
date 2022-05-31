@@ -2,15 +2,14 @@
 import numpy as np
 import pandas as pd
 import scipy.stats as st
-
+from tqdm import tqdm
 
 from fair.inverse import inverse_fair_scm
 from fair_spice.ensemble import run_ensemble
 import fair_spice.config as config
 
-
 SEEDS = config.RANDOM_SEEDS
-SAMPLES = 10_000
+SAMPLES = 100
 F2XCO2_MEAN = 4.00
 F2XCO2_NINETY = 0.48
 NINETY_TO_ONESIGMA = st.norm.ppf(0.95)
@@ -63,7 +62,7 @@ print("First 5 configs:")
 print(configs.head())
 
 # create a iterator of dicts from configs
-iter_config = (x._asdict() for x in configs.itertuples(index=False))
+iter_config = tqdm((x._asdict() for x in configs.itertuples(index=False)), total=SAMPLES)
 
 
 def run_model(**config):
@@ -79,4 +78,9 @@ def run_model(**config):
 
 forcing = {'C': C}
 
-run_ensemble(run_model, iter_config, forcing, outfile='ensemble.nc')
+run_ensemble(run_model, iter_config, forcing, outfile='ensemble_test.nc')
+
+import xarray
+
+ds = xarray.load_dataset('ensemble_test.nc')
+print(ds.temperature.mean('member'))
