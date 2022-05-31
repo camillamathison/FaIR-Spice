@@ -11,6 +11,7 @@ def write_data(group, run_num, run_data, config):
         group.variables[var][run_num, :] = data
     for param, value in config.items():
         group.variables[param][run_num] = value
+    group.variables['member'][run_num] = run_num
 
 
 def _echo_model(config, *, model, forcing):
