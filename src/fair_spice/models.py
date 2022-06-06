@@ -27,7 +27,7 @@ def forward_fair(config: dict[str, Any]) -> xr.Dataset:
     coords = {"time": xr.Variable(("time",), np.arange(len(T)), {"units": "year"})}
 
     # handle multi-gas case
-    if config['useMultigas']:
+    if len(C.shape) == 2:
         cdims = ("time", "gas")
         fdims = ("time", "forcing")
         coords["gas"] = xr.Variable(("gas",), cmip_gases)
