@@ -1,6 +1,6 @@
 import numpy as np
 
-from fair_spice.models import forward_fair, inverse_fair
+from fair_spice.fair.models import forward_fair, inverse_fair
 
 from fair.RCPs import rcp3pd
 
