@@ -1,34 +1,87 @@
-from typing import Optional
+from typing import Any, Optional
 import numpy as np
 import xarray as xr
 
+from fair.forward import fair_scm
 from fair.inverse import inverse_fair_scm
 
+from fair_spice.constants import cmip_gases, forcing_order
 
-def inverse_fair(config: dict, forcing: Optional[dict] = None) -> xr.Dataset:
+
+def forward_fair(config: dict[str, Any]) -> xr.Dataset:
+    """Run the fair_scm model and return an xarray Dataset.
+
+    Arguments:
+        config: A dict of scalar input parameters. These are passed to
+                fair_scm as keyword arguments. They will be coordinate
+                values in the returned Dataset
+
+    Currently does not support:
+     * diagnostics="AR6"
+
+    Returns:
+       xarray.Dataset of the fair_scm model run
+    """
+    C, F, T = fair_scm(**config)
+
+    coords = {"time": xr.Variable(("time",), np.arange(len(T)), {"units": "year"})}
+
+    # handle multi-gas case
+    if config['useMultigas']:
+        cdims = ("time", "gas")
+        fdims = ("time", "forcing")
+        coords["gas"] = xr.Variable(("gas",), cmip_gases)
+        coords["forcing"] = xr.Variable(("forcing",), forcing_order)
+    else:
+        cdims = fdims = ("time",)
+
+    dset = xr.Dataset(
+        {
+            "temperature": xr.Variable(
+                ("time",),
+                T,
+                {"units": "K", "description": "Temperature anomaly in Kelvin"},
+            ),
+            "radiative_forcing": xr.Variable(
+                fdims,
+                F,
+                {"units": "W/m2", "description": "Other radiative forcing in W/m2"},
+            ),
+            "concentration": xr.Variable(
+                cdims,
+                C,
+                {
+                    "units": "ppm",
+                    "description": "Atmospheric concentration of greenhouse gases",
+                },
+            ),
+        },
+        coords=coords,
+    )
+
+    return dset
+
+
+def inverse_fair(config: dict[str, Any]) -> xr.Dataset:
     """Run the inverse_fair_scm model and return an xarray Dataset.
 
     Arguments:
         config: A dict of scalar input parameters. These are passed to
                 inverse_fair_scm as keyword arguments. They will be coordinate
                 values in the returned Dataset
-        forcing: An optional dict of static input parameters. These are passed
-                 to inverse_fair_scm as keyword arguments.
-
-        If a forcing is given an additional empty 'ensemble_member' dimension is
-        added to the cube. All config entries are member-dependent dimension values, all `forcing` entries are independent of the member dimension. This simplifies running ensembles of model runs where some config options are varied across the ensemble and others remain constant.
-
 
         Currently does not support the additional return types for the
         'Geoffrey' temperature profile or restarts.
 
-    Returns:
-       xarray.Dataset of the model run
-    """
-    if forcing is None:
-        forcing = {}
+        The only difference from the underlying fair_inverse_fcm is that
+        `tcr` and `ecs` are passed as separate config parameters rather
+        than single 2-d array.
 
-    cfg = {**forcing, **config}
+    Returns:
+       xarray.Dataset of the inverse model run
+    """
+
+    cfg = {**config}
     # we want to record tcr and ecs separately, but the inverse_fair_scm model
     # expects them to be passed in together as an array. So we'll pop them out
     # and create the `tcrecs` object before running the function
@@ -48,17 +101,8 @@ def inverse_fair(config: dict, forcing: Optional[dict] = None) -> xr.Dataset:
         coords={
             "time": xr.Variable(("time",), np.arange(len(E)), {"units": "year"}),
             **config,
-            **forcing,
             "C": xr.Variable(("time",), cfg["C"], {"units": "ppmv[CO2]"}),
         },
     )
 
-    # if the static forcing is applied separately to config, create
-    # a new ensemble_member dimension and apply to all config entries
-    if forcing:
-        dset = dset.expand_dims("ensemble_member")
-        for c in config:
-            dset[c] = dset[c].expand_dims("ensemble_member")
-
     return dset
-
