@@ -14,7 +14,7 @@ outfile = "ensemble_test.nc"
 
 N_PROCS = int(os.environ.get("SLURM_NTASKS", "0")) or os.cpu_count()
 SEEDS = config.RANDOM_SEEDS
-SAMPLES = 100
+SAMPLES = 1_000_000
 F2XCO2_MEAN = 4.00
 F2XCO2_NINETY = 0.48
 NINETY_TO_ONESIGMA = st.norm.ppf(0.95)
