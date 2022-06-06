@@ -5,7 +5,7 @@ import xarray as xr
 from fair.forward import fair_scm
 from fair.inverse import inverse_fair_scm
 
-from fair_spice.constants import cmip_gases, forcing_order
+from fair_spice.fair.constants import cmip_gases, forcing_order
 
 
 def forward_fair(config: dict[str, Any]) -> xr.Dataset:
