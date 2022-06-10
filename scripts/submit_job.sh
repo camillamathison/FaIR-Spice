@@ -20,7 +20,4 @@
 
 set -euo pipefail
 conda activate fair-spice
-#exec python FaIR_inv_make_configs.py # to make the config files
-exec python scripts/run_ensemble.py --samples=1000000 ensemble_full.nc
-#exec python FaIR_inv_run.py configsdir/bgc_configs.json data_output/bgc_inverse_results.np
-
+exec python scripts/run_ensemble.py --samples=1000000 "fair_ensemble_${SLURM_JOBID}.nc"
