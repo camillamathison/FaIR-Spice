@@ -3,7 +3,7 @@
 from fair_spice.ensemble import make_member, stream_ensemble
 import fair_spice.config as config
 from fair_spice.fair.models import inverse_fair
-from fair_spice.fair.forcing.ghg import co2_log
+from fair.forcing.ghg import co2_log
 
 def run_model(params):
     n, config = params
