@@ -95,18 +95,25 @@ def main():
 
     # create all the configs as a dataframe
     config_table = pd.DataFrame(
-        dict(r0=r0_fs, rc=rC_fs, rt=rT_fs, F2x=f2x, tcr=tcr, ecs=ecs, other_rf=-co2_log(C, Cpi, F2x=f2x))
+        dict(r0=r0_fs, rc=rC_fs, rt=rT_fs, F2x=f2x, tcr=tcr, ecs=ecs)
     )
     print("First 5 configs:")
     print(config_table.head())
 
-
-    configs = ({**x._asdict(), "C": C} for x in config_table.itertuples(index=False))
+    def make_config_dict(row):
+        # take a pandas itertuples row and convert it into a config dict
+        config = row._asdict()
+        # add our forcings
+        config['C'] = C
+        config['other_rf'] = co2_log(C, Cpi, row.F2x)
+        return config
 
     print(f"Running {SAMPLES} ensemble members on {N_PROCS} cores:")
-    configs = tqdm(configs, total=SAMPLES, ncols=80, file=sys.stdout)
+    rows = config_table.itertuples(index=False)
+    configs = (make_config_dict(row) for row in rows)
+    pconfigs = tqdm(configs, total=SAMPLES, ncols=80, file=sys.stdout)
     with multiprocessing.Pool(N_PROCS, maxtasksperchild=1000) as pool:
-        batch = pool.imap(run_model, enumerate(configs))
+        batch = pool.imap(run_model, enumerate(pconfigs))
         stream_ensemble(outfile, batch)
 
     print(f"Done. Output saved to {outfile}")
