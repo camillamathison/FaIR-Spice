@@ -105,7 +105,7 @@ def main():
         config = row._asdict()
         # add our forcings
         config['C'] = C
-        config['other_rf'] = co2_log(C, Cpi, row.F2x)
+        config['other_rf'] = -co2_log(C, Cpi, row.F2x)
         return config
 
     print(f"Running {SAMPLES} ensemble members on {N_PROCS} cores:")
