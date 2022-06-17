@@ -3,6 +3,7 @@ channels:
   - https://conda.anaconda.org/chrisroadmap
   - conda-forge
 dependencies:
+  - climateforcing==0.2.3
   - fair==1.6.4
   - numpy=1.21  # datashader depends on numba, which requires numpy<=1.21 (as-of numba v0.55.0)
   - xarray
