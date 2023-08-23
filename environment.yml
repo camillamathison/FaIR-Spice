@@ -6,6 +6,7 @@ dependencies:
   - climateforcing==0.3.0
   - fair==1.6.4
   - numpy=1.21  # datashader depends on numba, which requires numpy<=1.21 (as-of numba v0.55.0)
+  - python-dotenv
   - xarray
   - netcdf4
   - datashader
