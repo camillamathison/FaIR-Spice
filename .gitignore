@@ -10,6 +10,8 @@ data_output/
 data_output_large/
 data_inputs/
 scripts/configsdir/
+csv_FaIRoutputfiles_2300/
+data_input/fair_ar6/
 
 # Apple files
 .DS_Store
