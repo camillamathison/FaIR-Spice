@@ -3,7 +3,7 @@
 #SBATCH --get-user-env=L
 #SBATCH --qos=normal
 #SBATCH --time=200
-#SBATCH --mem=64G
+#SBATCH --mem=32G
 #SBATCH --ntasks=40
 #SBATCH --output=/data/users/%u/fair_ensemble_%j.out
 #SBATCH --signal=B:2@60
@@ -20,4 +20,4 @@
 
 set -euo pipefail
 conda activate fair-spice
-exec python scripts/run_ensemble_std.py --samples=1000000 "fair_ensemble_std_${SLURM_JOBID}.nc"
+exec python scripts/run_ensemble.py --samples=1000000 "fair_ensemble_${SLURM_JOBID}.nc"

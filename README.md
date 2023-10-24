@@ -15,17 +15,12 @@ git clone https://github.com/camillamathison/FaIR-Spice.git
 cd Fair-Spice
 ```
 
-2. Create a `.env` file in the root directory of the repository, and populate it with the `DATADIR` variable that points to the path on your local machine (not committed as part of the Git repository) where you want to store output data:
-```
-DATADIR=/path/to/datafiles/   # change this to a local path where you want your output stored
-```
-
-3. Create environment:
+2. Create environment:
 ```bash
 conda env create -f environment.yml
 ```
 
-4. To run ...
+3. To run ...
 ```bash
 conda activate fair-spice
 ```
