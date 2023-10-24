@@ -10,8 +10,16 @@ data_output/
 data_output_large/
 data_inputs/
 scripts/configsdir/
+csv_FaIRoutputfiles/
+csv_FaIRoutputfiles_ssp/
 csv_FaIRoutputfiles_2300/
 data_input/fair_ar6/
+data_input/rcmip
+notebooks/fair-1.6.2-wg3-params-extended.json
+
+# plots
+plots/
+
 
 # Apple files
 .DS_Store
